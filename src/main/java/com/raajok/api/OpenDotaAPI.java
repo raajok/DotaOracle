@@ -1,6 +1,6 @@
-package com.raajok.API;
+package com.raajok.api;
 
-import com.raajok.API.OpenDota.Player;
+import com.raajok.api.OpenDota.Player;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,7 +10,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OpenDotaAPI {
 
@@ -48,11 +50,51 @@ public class OpenDotaAPI {
                 lastMatchTime = null;
             }
 
-            playerList.add(new Player(accountId, avatarfull, personaname, lastMatchTime, similarity));
+            playerList.add(new Player(accountId, avatarfull, personaname, lastMatchTime));
         }
 
         return playerList;
+    }
 
+    /**
+     * Search a player with a Steam ID.
+     * @param id steam ID
+     * @return Player
+     */
+    static public Player searchPlayer(int id) {
+        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + id);
+
+        JSONObject jsonBody = new JSONObject(res.body());
+        JSONObject jsonProfile = jsonBody.getJSONObject("profile");
+
+        String name = jsonProfile.getString("personaname");
+        String avatarFull = jsonProfile.getString("avatarfull");
+
+        return new Player(id, avatarFull, name, null);
+    }
+
+    /**
+     * Returns wins and losses in a Map. Calculates from most recent matches. Can be limited to a certain number of
+     * games with the limit parameter.
+     * wins -> (int), losses -> (int)
+     * @param account_id Steam ID
+     * @param limit How many matches to take into account
+     * @return
+     */
+    static public Map<String, Integer> wl(int account_id, int limit) {
+        String queryParams = "";
+        if (limit > 0) {
+            queryParams = "?limit=" + limit;
+        }
+        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + account_id + "/wl" + queryParams);
+
+        JSONObject jsonObject = new JSONObject(res.body());
+
+        Map<String, Integer> wl = new HashMap<>();
+        wl.put("wins", jsonObject.getInt("win"));
+        wl.put("losses", jsonObject.getInt("lose"));
+
+        return wl;
     }
 
     /**

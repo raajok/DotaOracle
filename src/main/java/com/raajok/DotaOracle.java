@@ -2,6 +2,7 @@ package com.raajok;
 
 import com.raajok.commands.HelloWorldCommand;
 import com.raajok.commands.SearchCommand;
+import com.raajok.commands.WlCommand;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -23,5 +24,6 @@ public class DotaOracle {
     private static void addCommands(CommandManager cmdManager) {
         cmdManager.addCommand(new HelloWorldCommand());
         cmdManager.addCommand(new SearchCommand());
+        cmdManager.addCommand(new WlCommand());
     }
 }

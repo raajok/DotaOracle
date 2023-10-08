@@ -1,4 +1,4 @@
-package com.raajok.API.OpenDota;
+package com.raajok.api.OpenDota;
 
 public class Player {
 
@@ -6,14 +6,12 @@ public class Player {
     private String avatarFull;
     private String name;
     private String lastMatchTime;
-    private Number similarity;
 
-    public Player(int accountId, String avatarFull, String name, String lastMatchTime, Number similarity) {
+    public Player(int accountId, String avatarFull, String name, String lastMatchTime) {
         this.accountId = accountId;
         this.avatarFull = avatarFull;
         this.name = name;
         this.lastMatchTime = lastMatchTime;
-        this.similarity = similarity;
     }
 
     public int getAccountId() {
@@ -30,10 +28,6 @@ public class Player {
 
     public String getLastMatchTime() {
         return this.lastMatchTime;
-    }
-
-    public Number getSimilarity() {
-        return this.similarity;
     }
 
     @Override

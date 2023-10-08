@@ -1,7 +1,7 @@
 package com.raajok.commands;
 
-import com.raajok.API.OpenDota.Player;
-import com.raajok.API.OpenDotaAPI;
+import com.raajok.api.OpenDota.Player;
+import com.raajok.api.OpenDotaAPI;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -16,7 +16,7 @@ public class SearchCommand implements Command {
     private List<OptionData> optionList = new ArrayList<>();
 
     public SearchCommand() {
-        this.optionList.add(new OptionData(OptionType.STRING, "name", "The name of the player."));
+        this.optionList.add(new OptionData(OptionType.STRING, "name", "The name of the player.", true));
     }
 
     @Override
