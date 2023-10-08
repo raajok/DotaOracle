@@ -29,7 +29,7 @@ public class CommandManager extends ListenerAdapter {
     public void onReady(@NotNull ReadyEvent event) {
         for (Guild guild : event.getJDA().getGuilds()) {
             for (Command command : this.commandList) {
-                guild.upsertCommand(command.getName(), command.getDescription()).addOptions(command.getOptions());
+                guild.upsertCommand(command.getName(), command.getDescription()).addOptions(command.getOptions()).queue();
             }
         }
     }
