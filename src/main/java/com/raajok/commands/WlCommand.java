@@ -1,7 +1,7 @@
 package com.raajok.commands;
 
 import com.raajok.api.OpenDota.Player;
-import com.raajok.api.OpenDotaAPI;
+import com.raajok.api.OpenDota.OpenDotaAPI;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;

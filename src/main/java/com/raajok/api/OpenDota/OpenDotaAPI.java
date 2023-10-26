@@ -1,6 +1,5 @@
-package com.raajok.api;
+package com.raajok.api.OpenDota;
 
-import com.raajok.api.OpenDota.Player;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,16 +76,16 @@ public class OpenDotaAPI {
      * Returns wins and losses in a Map. Calculates from most recent matches. Can be limited to a certain number of
      * games with the limit parameter.
      * wins -> (int), losses -> (int)
-     * @param account_id Steam ID
+     * @param accountId Steam ID
      * @param limit How many matches to take into account
      * @return
      */
-    static public Map<String, Integer> wl(int account_id, int limit) {
+    static public Map<String, Integer> wl(int accountId, int limit) {
         String queryParams = "";
         if (limit > 0) {
             queryParams = "?limit=" + limit;
         }
-        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + account_id + "/wl" + queryParams);
+        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + accountId + "/wl" + queryParams);
 
         JSONObject jsonObject = new JSONObject(res.body());
 
@@ -95,6 +94,49 @@ public class OpenDotaAPI {
         wl.put("losses", jsonObject.getInt("lose"));
 
         return wl;
+    }
+
+    /**
+     * Get hero's stats for a player
+     * @param heroId
+     * @param accountId
+     * @return Map of results
+     */
+    static public Hero hero(int heroId, int accountId) {
+        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + accountId + "/heroes?hero_id=" + heroId);
+        JSONObject responseJson = new JSONArray(res.body()).getJSONObject(0);
+
+        int id = responseJson.getInt("hero_id");
+        int lastPlayed = responseJson.getInt("last_played");
+        int games = responseJson.getInt("games");
+        int wins = responseJson.getInt("win");
+
+        return new Hero(id, lastPlayed, games, wins);
+    }
+
+    /**
+     * Get hero's "totals" (e.g. total kills) for a player
+     * @param heroId
+     * @param accountId
+     * @return
+     */
+    static public Totals totals(int heroId, int accountId) {
+        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + accountId + "/totals?hero_id=" + heroId);
+        JSONObject responseJson = new JSONObject("{\"array\":" + res.body() + "}"); // put curly brackers around because the returned json is a list
+        JSONArray json = responseJson.getJSONArray("array");
+
+        // check the indexes of the json array and gather the information. kind of hardcoded but the api response is not great
+        int games = json.getJSONObject(0).getInt("n");
+        int kills = json.getJSONObject(0).getInt("sum");
+        int deaths = json.getJSONObject(1).getInt("sum");
+        int assists = json.getJSONObject(2).getInt("sum");
+        int kda = json.getJSONObject(3).getInt("sum");
+        int goldPerMin = json.getJSONObject(4).getInt("sum");
+        int xpPerMin = json.getJSONObject(5).getInt("sum");
+        int lastHits = json.getJSONObject(6).getInt("sum");
+        int denies = json.getJSONObject(7).getInt("sum");
+
+        return new Totals(games, kills, deaths, assists, kda, goldPerMin, xpPerMin, lastHits, denies);
     }
 
     /**

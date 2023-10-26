@@ -1,7 +1,7 @@
 package com.raajok;
 
-import com.raajok.commands.HelloWorldCommand;
 import com.raajok.commands.HelpCommand;
+import com.raajok.commands.HerostatsCommand;
 import com.raajok.commands.SearchCommand;
 import com.raajok.commands.WlCommand;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -23,9 +23,9 @@ public class DotaOracle {
     }
 
     private static void addCommands(CommandManager cmdManager) {
-        cmdManager.addCommand(new HelloWorldCommand());
         cmdManager.addCommand(new SearchCommand());
         cmdManager.addCommand(new WlCommand());
         cmdManager.addCommand(new HelpCommand());
+        cmdManager.addCommand(new HerostatsCommand());
     }
 }
