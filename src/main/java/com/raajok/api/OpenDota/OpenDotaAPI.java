@@ -100,18 +100,33 @@ public class OpenDotaAPI {
      * Get hero's stats for a player
      * @param heroId
      * @param accountId
-     * @return Map of results
+     * @return Hero
      */
     static public Hero hero(int heroId, int accountId) {
-        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + accountId + "/heroes?hero_id=" + heroId);
-        JSONObject responseJson = new JSONArray(res.body()).getJSONObject(0);
+        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + accountId + "/heroes");
+        JSONArray responseArray = new JSONArray(res.body());
 
-        int id = responseJson.getInt("hero_id");
-        int lastPlayed = responseJson.getInt("last_played");
-        int games = responseJson.getInt("games");
-        int wins = responseJson.getInt("win");
+        Hero hero = new Hero();
+        // Ids are not in any specific order in JSON, have to loop over all of them
+        for (int i = 0; i < responseArray.length(); i++) {
+            JSONObject obj = responseArray.getJSONObject(i);
+            int id = obj.getInt("hero_id");
 
-        return new Hero(id, lastPlayed, games, wins);
+            if (heroId == id) {
+                hero.setId(id);
+                hero.setLastPlayed(obj.getInt("last_played"));
+                hero.setGames(obj.getInt("games"));
+                hero.setWins(obj.getInt("win"));
+                hero.setWithGames(obj.getInt("with_games"));
+                hero.setWithWins(obj.getInt("with_win"));
+                hero.setAgainstGames(obj.getInt("against_games"));
+                hero.setAgainstWins(obj.getInt("against_win"));
+                break;
+            }
+        }
+
+        // returns empty hero if not found in JSON
+        return hero;
     }
 
     /**
@@ -135,8 +150,9 @@ public class OpenDotaAPI {
         int xpPerMin = json.getJSONObject(5).getInt("sum");
         int lastHits = json.getJSONObject(6).getInt("sum");
         int denies = json.getJSONObject(7).getInt("sum");
+        int duration = json.getJSONObject(9).getInt("sum");
 
-        return new Totals(games, kills, deaths, assists, kda, goldPerMin, xpPerMin, lastHits, denies);
+        return new Totals(games, kills, deaths, assists, kda, goldPerMin, xpPerMin, lastHits, denies, duration);
     }
 
     /**

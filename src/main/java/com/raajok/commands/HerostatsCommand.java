@@ -3,12 +3,16 @@ package com.raajok.commands;
 import com.raajok.api.DatafeedAPI;
 import com.raajok.api.OpenDota.Hero;
 import com.raajok.api.OpenDota.OpenDotaAPI;
+import com.raajok.api.OpenDota.Player;
 import com.raajok.api.OpenDota.Totals;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +56,7 @@ public class HerostatsCommand implements Command {
         try {
             idAndName = DatafeedAPI.getIdAndNpcNameFromName(heroName);
         } catch (IllegalArgumentException e) {
-            event.reply("There is no hero called " + heroName).setEphemeral(true).queue();
+            event.getHook().editOriginal("There is no hero called *" + heroName + "*.").queue();
             return;
         }
         int heroId = Integer.parseInt(idAndName.get(0));
@@ -67,13 +71,93 @@ public class HerostatsCommand implements Command {
         Hero hero = OpenDotaAPI.hero(heroId, accountId);
         // get more specific statistics
         Totals totals = OpenDotaAPI.totals(heroId, accountId);
+        // search player name from ID
+        Player player = OpenDotaAPI.searchPlayer(accountId);
+        String playerName = player.getName();
 
         EmbedBuilder embed = new EmbedBuilder();
         embed.setAuthor(heroName, heroUrl, avatarUrl);
         embed.setThumbnail(thumbnailUrl);
-        embed = hero.embed(embed);
-        embed = totals.embed(embed);
+        embed.setDescription("Player **" + playerName + "** statistics for **" + heroName + "**.");
+        embed = embed(embed, hero, totals);
 
         event.getHook().editOriginalEmbeds(embed.build()).queue();
+    }
+
+    /**
+     * Turn the Hero and Totals information into an embed message
+     * @param builder
+     * @param hero
+     * @param totals
+     * @return Embed message with all info
+     */
+    private EmbedBuilder embed(EmbedBuilder builder, Hero hero, Totals totals) {
+        NumberFormat formatter = new DecimalFormat("#0.0");
+        NumberFormat noDecimal = new DecimalFormat(("#0"));
+
+        // check win % fields for 0 values
+        MessageEmbed.Field winPercentField;
+        MessageEmbed.Field withWinsPercentField;
+        MessageEmbed.Field againstWinsPercentField;
+        if (hero.getGames() == 0) {
+            winPercentField = new MessageEmbed.Field("Win %", "0", true);
+        } else {
+            winPercentField = new MessageEmbed.Field("Win %",formatter.format(Double.valueOf(hero.getWins()) / Double.valueOf(hero.getGames()) * 100) + " %", true);
+        }
+
+        if (hero.getWithGames() == 0) {
+            withWinsPercentField = new MessageEmbed.Field("Win % with", "0", true);
+        } else {
+            withWinsPercentField = new MessageEmbed.Field("Win % with", formatter.format(Double.valueOf(hero.getWithWins()) / Double.valueOf(hero.getWithGames()) * 100) + " %", true);
+        }
+
+        if (hero.getAgainstGames() == 0) {
+            againstWinsPercentField = new MessageEmbed.Field("Win % against", "0", true);
+        } else {
+            againstWinsPercentField = new MessageEmbed.Field("Win % against", formatter.format(Double.valueOf(hero.getAgainstWins()) / Double.valueOf(hero.getAgainstGames()) * 100) + " %", true);
+        }
+
+        // Basic hero stats
+        builder.addField("Last played", hero.getLastPlayedString(), true);
+        builder.addField("Time played", totals.getDuration() / 60 / 60 + "h", true);
+        builder.addBlankField(true);
+        builder.addField("Games", Integer.toString(hero.getGames()), true);
+        builder.addField(winPercentField);
+        builder.addBlankField(true);
+        builder.addField("Wins", Integer.toString(hero.getWins()), true);
+        builder.addField("Losses", Integer.toString(hero.getGames() - hero.getWins()), true);
+        builder.addBlankField(true);
+        builder.addField("Games played with", Integer.toString(hero.getWithGames()), true);
+        builder.addField(withWinsPercentField);
+        builder.addBlankField(true);
+        builder.addField("Games played against", Integer.toString(hero.getAgainstGames()), true);
+        builder.addField(againstWinsPercentField);
+        builder.addBlankField(true);
+        builder.addBlankField(false);
+
+        // Averages
+        if (totals.getGames() == 0) {
+            builder.addField("Avg kills","N/A" , true);
+            builder.addField("Avg Deaths", "N/A", true);
+            builder.addField("Avg Assists", "N/A", true);
+            builder.addField("Avg KDA", "N/A", true);
+            builder.addField("Avg Gold/Min", "N/A", true);
+            builder.addField("Avg XP/Min", "N/A", true);
+            builder.addField("Avg Lasthits", "N/A", true);
+            builder.addField("Avg Denies", "N/A", true);
+            builder.addBlankField(true);
+        } else {
+            builder.addField("Avg kills", formatter.format(Double.valueOf(totals.getKills()) / Double.valueOf(totals.getGames())) , true);
+            builder.addField("Avg Deaths", formatter.format(Double.valueOf(totals.getDeaths()) / Double.valueOf(totals.getGames())), true);
+            builder.addField("Avg Assists", formatter.format(Double.valueOf(totals.getAssists()) / Double.valueOf(totals.getGames())), true);
+            builder.addField("Avg KDA", formatter.format(Double.valueOf(totals.getKda()) / Double.valueOf(totals.getGames())), true);
+            builder.addField("Avg Gold/Min", noDecimal.format(Double.valueOf(totals.getGoldPerMin()) / Double.valueOf(totals.getGames())), true);
+            builder.addField("Avg XP/Min", noDecimal.format(Double.valueOf(totals.getXpPerMin()) / Double.valueOf(totals.getGames())), true);
+            builder.addField("Avg Lasthits", noDecimal.format(Double.valueOf(totals.getLastHits()) / Double.valueOf(totals.getGames())), true);
+            builder.addField("Avg Denies", noDecimal.format(Double.valueOf(totals.getDenies()) / Double.valueOf(totals.getGames())), true);
+            builder.addBlankField(true);
+        }
+
+        return builder;
     }
 }

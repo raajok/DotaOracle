@@ -20,8 +20,9 @@ public class Totals implements Embeddable {
     private int xpPerMin;
     private int lastHits;
     private int denies;
+    private int duration;
 
-    public Totals(int games, int kills, int deaths, int assists, int kda, int goldPerMin, int xpPerMin, int lastHits, int denies) {
+    public Totals(int games, int kills, int deaths, int assists, int kda, int goldPerMin, int xpPerMin, int lastHits, int denies, int duration) {
         this.games = games;
         this.kills = kills;
         this.deaths = deaths;
@@ -31,6 +32,7 @@ public class Totals implements Embeddable {
         this.xpPerMin = xpPerMin;
         this.lastHits = lastHits;
         this.denies = denies;
+        this.duration = duration;
     }
 
     public int getGames() {
@@ -68,6 +70,9 @@ public class Totals implements Embeddable {
     public int getDenies() {
         return denies;
     }
+    public int getDuration() {
+        return duration;
+    }
 
     @Override
     public EmbedBuilder embed() {
@@ -88,7 +93,6 @@ public class Totals implements Embeddable {
         NumberFormat formatter = new DecimalFormat("#0.0");
         NumberFormat noDecimal = new DecimalFormat(("#0"));
 
-        builder.addField("Games", Integer.toString(this.games), true);
         builder.addField("Avg kills", formatter.format(Double.valueOf(this.kills) / Double.valueOf(this.games)) , true);
         builder.addField("Avg Deaths", formatter.format(Double.valueOf(this.deaths) / Double.valueOf(this.games)), true);
         builder.addField("Avg Assists", formatter.format(Double.valueOf(this.assists) / Double.valueOf(this.games)), true);
@@ -97,6 +101,7 @@ public class Totals implements Embeddable {
         builder.addField("Avg XP/Min", noDecimal.format(Double.valueOf(this.xpPerMin) / Double.valueOf(this.games)), true);
         builder.addField("Avg Lasthits", noDecimal.format(Double.valueOf(this.lastHits) / Double.valueOf(this.games)), true);
         builder.addField("Avg Denies", noDecimal.format(Double.valueOf(this.denies) / Double.valueOf(this.games)), true);
+        builder.addBlankField(true);
 
         return builder;
     }
