@@ -97,7 +97,7 @@ public class OpenDotaAPI {
     }
 
     /**
-     * Get hero's stats for a player
+     * Get specific hero's stats for a player
      * @param heroId
      * @param accountId
      * @return Hero
@@ -127,6 +127,37 @@ public class OpenDotaAPI {
 
         // returns empty hero if not found in JSON
         return hero;
+    }
+
+    /**
+     * Get all hero stats for a player.
+     * The heroes are returned in the order of games played. (Sorting is done on the API's side)
+     * @param accountId steam id
+     * @param queryParams possible parameters in the end of the API URL (starts with ?)
+     * @return List of all heroes
+     */
+    public static List<Hero> heroes(int accountId, String queryParams) {
+        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + accountId + "/heroes" + queryParams);
+        JSONArray responseArray = new JSONArray(res.body());
+
+        List<Hero> heroes = new ArrayList<>();
+        for (int i = 0; i < responseArray.length(); i++) {
+            JSONObject obj = responseArray.getJSONObject(i);
+
+            int id = obj.getInt("hero_id");
+            int lastPlayed = obj.getInt("last_played");
+            int games = obj.getInt("games");
+            int wins = obj.getInt("win");
+            int withGames = obj.getInt("with_games");
+            int withWin = obj.getInt("with_win");
+            int againstGames = obj.getInt("against_games");
+            int againstWin = obj.getInt("against_win");
+
+            Hero hero = new Hero(id, lastPlayed, games, wins, withGames, withWin, againstGames, againstWin);
+            heroes.add(hero);
+        }
+
+        return heroes;
     }
 
     /**

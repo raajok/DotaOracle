@@ -1,9 +1,6 @@
 package com.raajok;
 
-import com.raajok.commands.HelpCommand;
-import com.raajok.commands.HerostatsCommand;
-import com.raajok.commands.SearchCommand;
-import com.raajok.commands.WlCommand;
+import com.raajok.commands.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -27,5 +24,6 @@ public class DotaOracle {
         cmdManager.addCommand(new WlCommand());
         cmdManager.addCommand(new HelpCommand());
         cmdManager.addCommand(new HerostatsCommand());
+        cmdManager.addCommand(new LeipaCommand());
     }
 }

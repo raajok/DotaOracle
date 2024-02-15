@@ -94,6 +94,26 @@ public class DatafeedAPI {
     }
 
     /**
+     * Gets the hero name corresponding to the given id.
+     * @param id the hero id
+     * @return The hero name
+     */
+    public static String getNameFromId(int id) {
+        HttpResponse<String> res = DatafeedAPI.callAPI("/herolist?language=english");
+        JSONObject responseJson = new JSONObject(res.body());
+        JSONArray heroes = responseJson.getJSONObject("result").getJSONObject("data").getJSONArray("heroes");
+
+        for (int i = 0; i < heroes.length(); i++) {
+            JSONObject hero = heroes.getJSONObject(i);
+            if (hero.getInt("id") == id) {
+                return hero.getString("name_english_loc");
+            }
+        }
+
+        return "<Hero name>";
+    }
+
+    /**
      * Calls the dota2 website with the given URL as the ending of the URL and returns the HttpResponse.
      * @param commandURL The part after BASE_URL (with parameters)
      * @return response
