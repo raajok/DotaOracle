@@ -1,5 +1,7 @@
 package com.raajok.api.OpenDota;
 
+import com.raajok.api.EpochTime;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,11 +82,15 @@ public class OpenDotaAPI {
      * @param limit How many matches to take into account
      * @return
      */
-    static public Map<String, Integer> wl(int accountId, int limit) {
-        String queryParams = "";
+    static public Map<String, Integer> wl(int accountId, int limit, @NotNull List<Integer> accountIdList) {
+        String queryParams = "?"; // the ? can be added to the end of a URL even without any upcoming parameters
         if (limit > 0) {
-            queryParams = "?limit=" + limit;
+            queryParams = "limit=" + limit;
         }
+        for (int id: accountIdList) {
+            queryParams += "&included_account_id=" + id;
+        }
+
         HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + accountId + "/wl" + queryParams);
 
         JSONObject jsonObject = new JSONObject(res.body());
@@ -114,7 +120,7 @@ public class OpenDotaAPI {
 
             if (heroId == id) {
                 hero.setId(id);
-                hero.setLastPlayed(obj.getInt("last_played"));
+                hero.setLastPlayed(new EpochTime(obj.getInt("last_played")));
                 hero.setGames(obj.getInt("games"));
                 hero.setWins(obj.getInt("win"));
                 hero.setWithGames(obj.getInt("with_games"));
@@ -145,7 +151,7 @@ public class OpenDotaAPI {
             JSONObject obj = responseArray.getJSONObject(i);
 
             int id = obj.getInt("hero_id");
-            int lastPlayed = obj.getInt("last_played");
+            EpochTime lastPlayed = new EpochTime(obj.getInt("last_played"));
             int games = obj.getInt("games");
             int wins = obj.getInt("win");
             int withGames = obj.getInt("with_games");
@@ -184,6 +190,42 @@ public class OpenDotaAPI {
         int duration = json.getJSONObject(9).getInt("sum");
 
         return new Totals(games, kills, deaths, assists, kda, goldPerMin, xpPerMin, lastHits, denies, duration);
+    }
+
+    /**
+     * Returns data about players played with. If accountIdList is an empty list, provides data about
+     * all players played with individually. If provided a list, considers only matches that is played with this party.
+     * @param accountId the player in question
+     * @param accountIdList filter to matches played with all of these players at the same time
+     * @return Data about players
+     */
+    public static List<Peer> peers(int accountId, @NotNull List<Integer> accountIdList) {
+        String queryParams = "?";
+        for (int id: accountIdList) {
+            queryParams += "&included_account_id=" + id;
+        }
+
+        HttpResponse<String> res = OpenDotaAPI.callAPI("/players/" + accountId + "/peers" + queryParams);
+        JSONArray responseArray = new JSONArray(res.body());
+
+        ArrayList<Peer> peers = new ArrayList<>();
+        for (int i = 0; i < responseArray.length(); i++) {
+            JSONObject obj = responseArray.getJSONObject(i);
+
+            int id = obj.getInt("account_id");
+            String avatarFull = obj.getString("avatarfull");
+            String name = obj.getString("personaname");
+            Player player = new Player(id, avatarFull, name, null);
+
+            EpochTime lastPlayed = new EpochTime(obj.getInt("last_played"));
+            int games = obj.getInt("games");
+            int wins = obj.getInt("win");
+
+            Peer peer = new Peer(player, lastPlayed, games, wins);
+            peers.add(peer);
+        }
+
+        return peers;
     }
 
     /**

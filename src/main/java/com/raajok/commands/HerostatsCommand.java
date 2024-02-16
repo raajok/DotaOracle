@@ -118,7 +118,7 @@ public class HerostatsCommand implements Command {
         }
 
         // Basic hero stats
-        builder.addField("Last played", hero.getLastPlayedString(), true);
+        builder.addField("Last played", hero.getLastPlayed().asDate(), true);
         builder.addField("Time played", totals.getDuration() / 60 / 60 + "h", true);
         builder.addBlankField(true);
         builder.addField("Games", Integer.toString(hero.getGames()), true);

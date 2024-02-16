@@ -1,18 +1,16 @@
 package com.raajok.api.OpenDota;
 
 import com.raajok.api.Embeddable;
+import com.raajok.api.EpochTime;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class Hero implements Embeddable {
 
     private int id;
-    private int lastPlayed;
+    private EpochTime lastPlayed;
     private int games;
     private int wins;
     private int withGames;
@@ -20,7 +18,7 @@ public class Hero implements Embeddable {
     private int againstGames;
     private int againstWins;
 
-    public Hero(int id, int lastPlayed, int games, int wins, int withGames, int withWins, int againstGames, int againstWins) {
+    public Hero(int id, EpochTime lastPlayed, int games, int wins, int withGames, int withWins, int againstGames, int againstWins) {
         this.id = id;
         this.lastPlayed = lastPlayed;
         this.games = games;
@@ -39,21 +37,8 @@ public class Hero implements Embeddable {
         return id;
     }
 
-    public int getLastPlayed() {
+    public EpochTime getLastPlayed() {
         return lastPlayed;
-    }
-
-    public String getLastPlayedString() {
-        if (this.lastPlayed == 0) {
-            return "Never";
-        }
-
-        Date date = new Date(this.lastPlayed * 1000L);
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-        format.setTimeZone(TimeZone.getDefault());
-        String dateString = format.format(date);
-
-        return dateString;
     }
 
     public int getGames() {
@@ -84,7 +69,7 @@ public class Hero implements Embeddable {
         this.id = id;
     }
 
-    public void setLastPlayed(int lastPlayed) {
+    public void setLastPlayed(EpochTime lastPlayed) {
         this.lastPlayed = lastPlayed;
     }
 
@@ -123,10 +108,7 @@ public class Hero implements Embeddable {
     }
 
     private EmbedBuilder addFields(EmbedBuilder builder) {
-        Date date = new Date(lastPlayed * 1000L);
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-        format.setTimeZone(TimeZone.getDefault());
-        String dateString = format.format(date);
+        String dateString = this.lastPlayed.asDate();
 
         NumberFormat formatter = new DecimalFormat("#0.0");
 

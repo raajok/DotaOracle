@@ -47,7 +47,7 @@ public class WlCommand implements Command {
         int id = event.getOption("id").getAsInt();
 
         // Win/Loss statistics
-        Map<String, Integer> wl = OpenDotaAPI.wl(id, amount);
+        Map<String, Integer> wl = OpenDotaAPI.wl(id, amount, new ArrayList<>());
         int wins = wl.get("wins");
         int losses = wl.get("losses");
         Double winPercent = ((double) wins) / (((double) wins) + ((double) losses)) * 100;
