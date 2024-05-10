@@ -1,5 +1,6 @@
 package com.raajok;
 
+import com.raajok.audio.AudioBot;
 import com.raajok.commands.*;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
@@ -14,9 +15,11 @@ public class DotaOracle {
         JDA jda = JDABuilder.createDefault(TOKEN).build();
 
         CommandManager cmdManager = new CommandManager();
+        AudioBot audioBot = new AudioBot();
         addCommands(cmdManager);
 
         jda.addEventListener(cmdManager);
+        jda.addEventListener(audioBot);
     }
 
     private static void addCommands(CommandManager cmdManager) {
