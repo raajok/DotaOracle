@@ -28,5 +28,6 @@ public class DotaOracle {
         cmdManager.addCommand(new HelpCommand());
         cmdManager.addCommand(new HerostatsCommand());
         cmdManager.addCommand(new LeipaCommand());
+        cmdManager.addCommand(new RecordsCommand());
     }
 }

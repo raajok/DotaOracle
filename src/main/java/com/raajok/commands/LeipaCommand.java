@@ -6,7 +6,6 @@ import com.raajok.api.OpenDota.Hero;
 import com.raajok.api.OpenDota.OpenDotaAPI;
 import com.raajok.api.OpenDota.Peer;
 import com.raajok.api.OpenDota.Player;
-import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -19,23 +18,6 @@ import java.util.List;
  * Slash command for showing statistics of Leipägang members for the last 6 months.
  */
 public class LeipaCommand implements Command {
-
-    private final List<Integer> idList;
-
-    public LeipaCommand() {
-        this.idList = new ArrayList<>();
-
-        Dotenv dotenv = Dotenv.load();
-        final int PAAHTIS_ID = Integer.parseInt(dotenv.get("PAAHTIS_ID"));
-        final int PATONKI_ID = Integer.parseInt(dotenv.get("PATONKI_ID"));
-        final int KAURATYYNY_ID = Integer.parseInt(dotenv.get("KAURATYYNY_ID"));
-        final int LIMPPU_ID = Integer.parseInt(dotenv.get("LIMPPU_ID"));
-
-        this.idList.add(PAAHTIS_ID);
-        this.idList.add(PATONKI_ID);
-        this.idList.add(KAURATYYNY_ID);
-        this.idList.add(LIMPPU_ID);
-    }
 
     @Override
     public String getName() {
@@ -62,8 +44,9 @@ public class LeipaCommand implements Command {
 
         // Get wl for one of the players, but set query parameters to only include games with all other members.
         // This way we get statistics for the whole group as a whole.
-        List<Integer> paramIds = this.idList.subList(1, this.idList.size());
-        List<Peer> peers = OpenDotaAPI.peers(this.idList.get(0), paramIds);
+        List<Integer> ids = new Leipagang().ids();
+        List<Integer> paramIds = ids.subList(1, ids.size());
+        List<Peer> peers = OpenDotaAPI.peers(ids.get(0), paramIds);
         Peer peer = peers.get(0);
         EpochTime lastPlayedTogether = peer.getLastPlayed();
         int games = peer.getGames();
@@ -84,7 +67,7 @@ public class LeipaCommand implements Command {
         embedList.add(embed.build());
 
         // Build individual messages for all members
-        for (int id: this.idList) {
+        for (int id: ids) {
             Player player = OpenDotaAPI.searchPlayer(id);
             List<Hero> heroList = OpenDotaAPI.heroes(id, "?date=180");
             Hero mostPlayedHero = heroList.get(0);

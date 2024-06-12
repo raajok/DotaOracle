@@ -31,6 +31,7 @@ public class AudioBot extends ListenerAdapter {
     private final AudioSendHandler audioSendHandler;
     private final TrackScheduler trackScheduler;
     private boolean trackPlayed;
+    private final String roleToListen;
 
     public AudioBot() {
         this.playerManager = new DefaultAudioPlayerManager();
@@ -38,6 +39,8 @@ public class AudioBot extends ListenerAdapter {
         this.audioSendHandler = new AudioPlayerSendHandler(this.player);
         this.trackScheduler = new TrackScheduler();
         this.trackPlayed = false;
+
+        this.roleToListen = "Leipägang";
     }
 
     @Override
@@ -115,7 +118,7 @@ public class AudioBot extends ListenerAdapter {
 
     private boolean isLeipa(List<Role> roles) {
         for (Role role: roles) {
-            if (role.getName().equals("Leipägang")) {
+            if (role.getName().equals(roleToListen)) {
                 return true;
             }
         }
