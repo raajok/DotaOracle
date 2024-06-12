@@ -23,11 +23,12 @@ public class DotaOracle {
     }
 
     private static void addCommands(CommandManager cmdManager) {
-        cmdManager.addCommand(new SearchCommand());
-        cmdManager.addCommand(new WlCommand());
+        cmdManager.addCommand(new GitHubCommand());
         cmdManager.addCommand(new HelpCommand());
         cmdManager.addCommand(new HerostatsCommand());
         cmdManager.addCommand(new LeipaCommand());
         cmdManager.addCommand(new RecordsCommand());
+        cmdManager.addCommand(new SearchCommand());
+        cmdManager.addCommand(new WlCommand());
     }
 }

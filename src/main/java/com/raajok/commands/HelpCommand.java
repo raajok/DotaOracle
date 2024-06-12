@@ -33,7 +33,8 @@ public class HelpCommand implements Command {
         String description = "Below is a list of all commands with descriptions. Required parameters are in square brackets [] and optional parameters are in curly brackets {}.";
 
         Map<String, String> commandDescriptions = new HashMap<>();
-        commandDescriptions.put("help", "Opens up this info message");
+        commandDescriptions.put("github", "Gives a link to the bot's GitHub repository.");
+        commandDescriptions.put("help", "Opens up this info message.");
         commandDescriptions.put("herostats [hero] [id]", "Shows hero-specific stats for the player owning the Steam ID given.");
         commandDescriptions.put("leipägang", "Shows Leipägang's win/loss statistics and brief statistics for all members individually.");
         commandDescriptions.put("records", "Shows the records of Leipägang. The records are taken from the Dotabuff's record page.");
