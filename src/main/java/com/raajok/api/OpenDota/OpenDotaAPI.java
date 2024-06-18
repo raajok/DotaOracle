@@ -41,7 +41,6 @@ public class OpenDotaAPI {
             int accountId = player.getInt("account_id");
             String avatarfull = player.getString("avatarfull");
             String personaname = player.getString("personaname");
-            Number similarity = player.getNumber("similarity");
 
             // Last match time is not always present in the response.
             String lastMatchTime;
@@ -85,7 +84,7 @@ public class OpenDotaAPI {
     static public Map<String, Integer> wl(int accountId, int limit, @NotNull List<Integer> accountIdList) {
         String queryParams = "?"; // the ? can be added to the end of a URL even without any upcoming parameters
         if (limit > 0) {
-            queryParams = "limit=" + limit;
+            queryParams += "limit=" + limit;
         }
         for (int id: accountIdList) {
             queryParams += "&included_account_id=" + id;
