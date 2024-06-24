@@ -1,4 +1,5 @@
 # Dota Oracle
+Dota Oracle is my ongoing Discord bot project. For now, it provides Dota 2 specific statistics via slash commands and plays music in voice channels.
 ## Commands
 Below is a list of all commands with descriptions. Required parameters are in square brackets [] and optional parameters are in curly brackets {}.
 | Command | Description |
@@ -13,7 +14,7 @@ Below is a list of all commands with descriptions. Required parameters are in sq
 ## Other features
 Whenever anyone from my friend group joins a voice channel, Dota Oracle joins as well and plays the group's anthem.
 ## Acknowledgements
-- [JDA](https://github.com/discord-jda/JDA) is used to work with Discord
-- [OpenDota](https://www.opendota.com/)'s API is used to provide most of the statistics.
+- [JDA](https://github.com/discord-jda/JDA) is used to work with Discord.
+- [OpenDota](https://www.opendota.com/)'s API provides most of the Dota 2 statistics.
 - [Lavaplayer](https://github.com/lavalink-devs/lavaplayer) is used to play music in voice channels.
 - [jsoup](https://jsoup.org/) is used to scrape and parse HTML for the records command.
